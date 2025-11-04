@@ -23,6 +23,9 @@ fun ProfileScreen(
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
+    var showAddressesDialog by remember { mutableStateOf(false) }
+    var showSettingsDialog by remember { mutableStateOf(false) }
+    var showAboutDialog by remember { mutableStateOf(false) }
     
     if (showLogoutDialog) {
         AlertDialog(
@@ -43,6 +46,58 @@ fun ProfileScreen(
             dismissButton = {
                 TextButton(onClick = { showLogoutDialog = false }) {
                     Text("Hủy")
+                }
+            }
+        )
+    }
+    
+    // Addresses Dialog
+    if (showAddressesDialog) {
+        AlertDialog(
+            onDismissRequest = { showAddressesDialog = false },
+            title = { Text("Địa chỉ giao hàng") },
+            text = { Text("Tính năng quản lý địa chỉ giao hàng sẽ được cập nhật trong phiên bản sau. Hiện tại bạn có thể nhập địa chỉ trực tiếp khi thanh toán.") },
+            confirmButton = {
+                TextButton(onClick = { showAddressesDialog = false }) {
+                    Text("Đóng")
+                }
+            }
+        )
+    }
+    
+    // Settings Dialog
+    if (showSettingsDialog) {
+        AlertDialog(
+            onDismissRequest = { showSettingsDialog = false },
+            title = { Text("Cài đặt") },
+            text = { Text("Tính năng cài đặt sẽ được cập nhật trong phiên bản sau. Bạn có thể cài đặt ngôn ngữ, thông báo, và các tùy chọn khác.") },
+            confirmButton = {
+                TextButton(onClick = { showSettingsDialog = false }) {
+                    Text("Đóng")
+                }
+            }
+        )
+    }
+    
+    // About Dialog
+    if (showAboutDialog) {
+        AlertDialog(
+            onDismissRequest = { showAboutDialog = false },
+            title = { Text("Về chúng tôi") },
+            text = { 
+                Column {
+                    Text("HoakiFood - Ứng dụng đặt đồ ăn")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Phiên bản: 1.0.0")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("© 2024 HoakiFood Team")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Ứng dụng được xây dựng với Jetpack Compose và Material Design 3.")
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showAboutDialog = false }) {
+                    Text("Đóng")
                 }
             }
         )
@@ -143,7 +198,7 @@ fun ProfileScreen(
                 ProfileMenuItem(
                     icon = Icons.Default.LocationOn,
                     title = "Địa chỉ giao hàng",
-                    onClick = { /* TODO */ }
+                    onClick = { showAddressesDialog = true }
                 )
             }
             
@@ -152,7 +207,7 @@ fun ProfileScreen(
                 ProfileMenuItem(
                     icon = Icons.Default.Settings,
                     title = "Cài đặt",
-                    onClick = { /* TODO */ }
+                    onClick = { showSettingsDialog = true }
                 )
             }
             
@@ -161,7 +216,7 @@ fun ProfileScreen(
                 ProfileMenuItem(
                     icon = Icons.Default.Info,
                     title = "Về chúng tôi",
-                    onClick = { /* TODO */ }
+                    onClick = { showAboutDialog = true }
                 )
             }
             

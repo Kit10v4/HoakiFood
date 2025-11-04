@@ -36,6 +36,8 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var rememberMe by remember { mutableStateOf(false) }
+    var showForgotPasswordDialog by remember { mutableStateOf(false) }
+    var showGoogleSignInDialog by remember { mutableStateOf(false) }
     
     val authState by viewModel.authState.collectAsState()
     
@@ -47,6 +49,34 @@ fun LoginScreen(
             }
             else -> {}
         }
+    }
+    
+    // Forgot Password Dialog
+    if (showForgotPasswordDialog) {
+        AlertDialog(
+            onDismissRequest = { showForgotPasswordDialog = false },
+            title = { Text("Quên mật khẩu") },
+            text = { Text("Tính năng đặt lại mật khẩu sẽ được cập nhật trong phiên bản sau. Vui lòng liên hệ bộ phận hỗ trợ để được giúp đỡ.") },
+            confirmButton = {
+                TextButton(onClick = { showForgotPasswordDialog = false }) {
+                    Text("Đóng")
+                }
+            }
+        )
+    }
+    
+    // Google Sign In Dialog
+    if (showGoogleSignInDialog) {
+        AlertDialog(
+            onDismissRequest = { showGoogleSignInDialog = false },
+            title = { Text("Đăng nhập với Google") },
+            text = { Text("Tính năng đăng nhập bằng Google sẽ được cập nhật trong phiên bản sau.") },
+            confirmButton = {
+                TextButton(onClick = { showGoogleSignInDialog = false }) {
+                    Text("Đóng")
+                }
+            }
+        )
     }
     
     Box(
@@ -146,7 +176,7 @@ fun LoginScreen(
             
             // Forgot Password Link
             TextButton(
-                onClick = { /* TODO */ },
+                onClick = { showForgotPasswordDialog = true },
                 modifier = Modifier.align(Alignment.End)
             ) {
                 Text(
@@ -257,7 +287,7 @@ fun LoginScreen(
             
             // Google Sign In Button
             OutlinedButton(
-                onClick = { /* TODO */ },
+                onClick = { showGoogleSignInDialog = true },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
