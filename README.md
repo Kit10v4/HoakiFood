@@ -2,9 +2,14 @@
 
 Ứng dụng đặt đồ ăn được xây dựng với Jetpack Compose và kiến trúc MVVM.
 
+## ⭐ Trạng thái dự án
+
+**✅ Hoàn thành** - Tất cả các tính năng chính đã được triển khai đầy đủ và sẵn sàng sử dụng.
+
 ## Tính năng
 
 - ✅ Đăng nhập & Đăng ký
+- ✅ Tự động đăng nhập khi mở lại app
 - ✅ Trang chủ với danh mục món ăn
 - ✅ Chi tiết món ăn
 - ✅ Giỏ hàng
@@ -13,6 +18,7 @@
 - ✅ Tìm kiếm món ăn
 - ✅ Yêu thích món ăn
 - ✅ Hồ sơ người dùng
+- ✅ Dữ liệu mẫu tự động khởi tạo
 
 ## Công nghệ sử dụng
 
