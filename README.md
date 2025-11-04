@@ -60,7 +60,7 @@ app/
 ## Yêu cầu
 
 - Android Studio Hedgehog | 2023.1.1+
-- Kotlin 1.9.20+
+- Kotlin 1.9.0+
 - Android SDK 24+
 - JDK 17
 
