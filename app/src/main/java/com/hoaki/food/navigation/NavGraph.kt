@@ -25,8 +25,14 @@ fun NavGraph(
     ) {
         composable(Screen.Splash.route) {
             SplashScreen(
+                isLoggedIn = isLoggedIn,
                 onNavigateToLogin = {
                     navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
+                },
+                onNavigateToHome = {
+                    navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
                 }
