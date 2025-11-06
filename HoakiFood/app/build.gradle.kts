@@ -105,11 +105,8 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
 
-    // Google Sign-In & Credentials
+    // Google Sign-In
     implementation(libs.play.services.auth)
-    implementation(libs.googleid)
-    implementation(libs.androidx.credentials)
-    implementation(libs.androidx.credentials.play.services.auth)
 
     // Gson
     implementation(libs.gson)
@@ -122,4 +119,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation("com.github.bumptech.glide:compose:1.0.0-beta08")
 }

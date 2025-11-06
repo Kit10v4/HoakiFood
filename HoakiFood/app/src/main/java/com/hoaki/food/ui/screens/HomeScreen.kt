@@ -42,13 +42,13 @@ fun HomeScreen(
     val selectedCategoryId by viewModel.selectedCategoryId.collectAsState()
     val foodsByCategory by viewModel.foodsByCategory.collectAsState()
     val cartItemCount by cartViewModel.cartItemCount.collectAsState()
-    
+
     val displayedFoods = if (selectedCategoryId != null) foodsByCategory else allFoods
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { 
+                title = {
                     Text(
                         "HoakiFood",
                         fontWeight = FontWeight.Bold
@@ -108,7 +108,7 @@ fun HomeScreen(
                     }
                 }
             }
-            
+
             // Categories
             item {
                 Column {
@@ -118,7 +118,7 @@ fun HomeScreen(
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
-                    
+
                     LazyRow(
                         contentPadding = PaddingValues(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -140,7 +140,7 @@ fun HomeScreen(
                     }
                 }
             }
-            
+
             // Popular Foods
             if (selectedCategoryId == null && popularFoods.isNotEmpty()) {
                 item {
@@ -151,7 +151,7 @@ fun HomeScreen(
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
-                    
+
                     LazyRow(
                         contentPadding = PaddingValues(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -165,7 +165,7 @@ fun HomeScreen(
                     }
                 }
             }
-            
+
             // All Foods / Foods by Category
             item {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -176,7 +176,7 @@ fun HomeScreen(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
             }
-            
+
             items(displayedFoods) { food ->
                 FoodListItem(
                     food = food,
@@ -354,3 +354,4 @@ fun formatPrice(price: Double): String {
     val formatter = NumberFormat.getCurrencyInstance(Locale("vi", "VN"))
     return formatter.format(price)
 }
+
