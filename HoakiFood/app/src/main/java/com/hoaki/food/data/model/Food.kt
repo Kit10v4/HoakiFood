@@ -18,5 +18,6 @@ data class Food(
     val isPopular: Boolean = false,
     val isFavorite: Boolean = false,
     val preparationTime: Int = 0, // in minutes
-    val calories: Int = 0
+    val calories: Int = 0,
+    val discount: Int = 0 // Discount percentage 0-100
 )

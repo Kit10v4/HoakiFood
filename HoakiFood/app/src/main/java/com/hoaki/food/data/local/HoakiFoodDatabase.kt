@@ -14,7 +14,7 @@ import com.hoaki.food.data.model.*
         CartItem::class,
         Order::class
     ],
-    version = 1,
+    version = 2, // Incremented version for discount field
     exportSchema = false
 )
 @TypeConverters(Converters::class)
