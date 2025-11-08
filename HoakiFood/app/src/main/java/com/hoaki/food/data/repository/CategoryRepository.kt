@@ -14,6 +14,8 @@ class CategoryRepository @Inject constructor(
     
     fun getCategoryById(categoryId: Long): Flow<Category?> = categoryDao.getCategoryById(categoryId)
     
+    suspend fun getCategoryCount(): Int = categoryDao.getCategoryCount()
+    
     suspend fun insertCategory(category: Category) = categoryDao.insertCategory(category)
     
     suspend fun insertCategories(categories: List<Category>) = categoryDao.insertCategories(categories)

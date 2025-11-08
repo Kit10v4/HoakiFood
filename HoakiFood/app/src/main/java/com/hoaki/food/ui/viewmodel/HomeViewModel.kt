@@ -47,8 +47,9 @@ class HomeViewModel @Inject constructor(
     
     private fun initializeSampleData() {
         viewModelScope.launch {
-            // Check if data already exists
-            if (categories.value.isEmpty()) {
+            // Check database directly to avoid race condition with Flow
+            val categoryCount = categoryRepository.getCategoryCount()
+            if (categoryCount == 0) {
                 insertSampleCategories()
                 insertSampleFoods()
             }

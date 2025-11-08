@@ -12,6 +12,9 @@ interface CategoryDao {
     @Query("SELECT * FROM categories WHERE id = :categoryId")
     fun getCategoryById(categoryId: Long): Flow<Category?>
     
+    @Query("SELECT COUNT(*) FROM categories")
+    suspend fun getCategoryCount(): Int
+    
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCategory(category: Category)
     
