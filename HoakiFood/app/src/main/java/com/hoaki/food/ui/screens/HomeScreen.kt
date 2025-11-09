@@ -98,7 +98,7 @@ fun HomeScreen(
                         modifier = Modifier.padding(16.dp)
                     ) {
                         Text(
-                            text = "Chào mừng đến với HoakiFood! 👋",
+                            text = "Chào mừng đến với HoakiFood!",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
                         )

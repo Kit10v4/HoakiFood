@@ -3,6 +3,7 @@ package com.hoaki.food.data.preferences
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -18,7 +19,6 @@ class UserPreferences(private val context: Context) {
         private val USER_ID_KEY = longPreferencesKey("user_id")
         private val USER_EMAIL_KEY = stringPreferencesKey("user_email")
         private val USER_NAME_KEY = stringPreferencesKey("user_name")
-        private val IS_LOGGED_IN_KEY = stringPreferencesKey("is_logged_in")
     }
     
     val userIdFlow: Flow<Long?> = context.dataStore.data.map { preferences ->
@@ -34,7 +34,7 @@ class UserPreferences(private val context: Context) {
     }
     
     val isLoggedInFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
-        preferences[IS_LOGGED_IN_KEY] == "true"
+        preferences.contains(USER_ID_KEY)
     }
     
     suspend fun saveUserSession(userId: Long, email: String, name: String) {
@@ -42,7 +42,6 @@ class UserPreferences(private val context: Context) {
             preferences[USER_ID_KEY] = userId
             preferences[USER_EMAIL_KEY] = email
             preferences[USER_NAME_KEY] = name
-            preferences[IS_LOGGED_IN_KEY] = "true"
         }
     }
     

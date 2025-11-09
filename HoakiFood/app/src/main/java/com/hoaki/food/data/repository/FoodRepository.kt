@@ -17,21 +17,18 @@ class FoodRepository @Inject constructor(
     fun getFoodsByCategory(categoryId: Long): Flow<List<Food>> = foodDao.getFoodsByCategory(categoryId)
     
     fun getPopularFoods(): Flow<List<Food>> = foodDao.getPopularFoods()
+
+    fun getDiscountedFoods(): Flow<List<Food>> = foodDao.getDiscountedFoods()
     
     fun getFavoriteFoods(): Flow<List<Food>> = foodDao.getFavoriteFoods()
     
     fun searchFoods(query: String): Flow<List<Food>> = foodDao.searchFoods(query)
     
-    suspend fun insertFood(food: Food) = foodDao.insertFood(food)
-    
-    suspend fun insertFoods(foods: List<Food>) = foodDao.insertFoods(foods)
-    
-    suspend fun updateFood(food: Food) = foodDao.updateFood(food)
-    
-    suspend fun toggleFavorite(food: Food) {
-        val updatedFood = food.copy(isFavorite = !food.isFavorite)
-        foodDao.updateFood(updatedFood)
+    suspend fun insertFoods(foods: List<Food>) {
+        foodDao.insertFoods(foods)
     }
     
-    suspend fun deleteFood(food: Food) = foodDao.deleteFood(food)
+    suspend fun toggleFavorite(food: Food) {
+        foodDao.updateFood(food.copy(isFavorite = !food.isFavorite))
+    }
 }

@@ -1,46 +1,47 @@
 package com.hoaki.food.ui.screens
 
-import android.graphics.PointF
-import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
-import com.hoaki.food.R
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.zIndex
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.material.icons.filled.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.foundation.clickable
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.hoaki.food.R
+import com.hoaki.food.data.model.Food
+import com.hoaki.food.ui.viewmodel.HomeViewModel
 
 val AppFontFamily = FontFamily(
     Font(R.font.montserrat_light, FontWeight.Light),
@@ -133,16 +134,23 @@ fun Header() {
 @Preview(showBackground = true)
 @Composable
 fun HomeScreen1Preview() {
-    HomeScreen1()
+    HomeScreen1(
+        onProfileClick = {},
+        onCartClick = {},
+        onSearchClick = {},
+        onFoodClick = {},
+        onFabClick = {},
+        onFavoritesClick = {}
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBar() {
+fun SearchBar(modifier: Modifier = Modifier) {
     var searchText by remember { mutableStateOf("") }
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(0.9f)
             .height(36.dp)
             .shadow(
@@ -184,27 +192,45 @@ fun SearchBar() {
                     color = Color.Black
                 ),
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                enabled = false // Disable text field to make the whole bar clickable
             )
         }
     }
 }
 
 @Composable
-fun HomeScreen1() {
+fun HomeScreen1(
+    onFoodClick: (Long) -> Unit,
+    onCartClick: () -> Unit,
+    onSearchClick: () -> Unit,
+    onProfileClick: () -> Unit,
+    onFabClick: () -> Unit,
+    onFavoritesClick: () -> Unit,
+    viewModel: HomeViewModel = hiltViewModel()
+) {
+    val allFoods by viewModel.allFoods.collectAsState()
     val fabSize = 64.dp
     val fabYOffset = 16.dp // Điều chỉnh độ sâu của FAB
+    var selectedCategory by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
         topBar = {
             Header()
         },
         bottomBar = {
-            Bottom(fabSize = fabSize, fabYOffset = fabYOffset)
+            Bottom(
+                fabSize = fabSize,
+                fabYOffset = fabYOffset,
+                currentScreen = "home",
+                onProfileClick = onProfileClick,
+                onCartClick = onCartClick,
+                onFavoritesClick = onFavoritesClick
+            )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* Handle FAB click */ },
+                onClick = onFabClick,
                 containerColor = Color.White,
                 contentColor = Color.DarkGray,
                 elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 8.dp),
@@ -222,60 +248,142 @@ fun HomeScreen1() {
         },
         floatingActionButtonPosition = FabPosition.Center,
     ) { contentPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(contentPadding)
-                .padding(vertical = 36.dp),
+                .padding(contentPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            contentPadding = PaddingValues(bottom = 16.dp)
         ) {
+            item {
+                Spacer(modifier = Modifier.height(36.dp))
+            }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.85f)
-                    .background(
-                        color = Color(0xFFF2F3F7),
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .padding(horizontal = 8.dp, vertical = 8.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.85f)
+                        .background(
+                            color = Color(0xFFF2F3F7),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 8.dp)
                 ) {
-                    CategoryItem(R.drawable.anvat, "Ăn vặt", AppFontFamily)
-                    CategoryItem(R.drawable.doan, "Đồ ăn", AppFontFamily)
-                    CategoryItem(R.drawable.thucuong, "Thức Uống", AppFontFamily)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val cat1 = "Ăn vặt"
+                        CategoryItem(
+                            iconRes = R.drawable.anvat,
+                            text = cat1,
+                            fontFamily = AppFontFamily,
+                            isSelected = selectedCategory == cat1,
+                            onClick = {
+                                selectedCategory = if (selectedCategory == cat1) null else cat1
+                            }
+                        )
+                        val cat2 = "Đồ ăn"
+                        CategoryItem(
+                            iconRes = R.drawable.doan,
+                            text = cat2,
+                            fontFamily = AppFontFamily,
+                            isSelected = selectedCategory == cat2,
+                            onClick = {
+                                selectedCategory = if (selectedCategory == cat2) null else cat2
+                            }
+                        )
+                        val cat3 = "Thức Uống"
+                        CategoryItem(
+                            iconRes = R.drawable.thucuong,
+                            text = cat3,
+                            fontFamily = AppFontFamily,
+                            isSelected = selectedCategory == cat3,
+                            onClick = {
+                                selectedCategory = if (selectedCategory == cat3) null else cat3
+                            }
+                        )
+                    }
                 }
             }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.85f)
-                    .background(
-                        color = Color(0xFFF2F3F7),
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .padding(horizontal = 8.dp, vertical = 8.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.85f)
+                        .background(
+                            color = Color(0xFFF2F3F7),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 8.dp)
                 ) {
-                    CategoryItem(R.drawable.vitri, "Gần bạn", AppFontFamily)
-                    CategoryItem(R.drawable.khuyenmai, "Khuyến mãi", AppFontFamily)
-                    CategoryItem(R.drawable.tieubieu, "Tiêu biểu", AppFontFamily)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val cat4 = "Gần bạn"
+                        CategoryItem(
+                            iconRes = R.drawable.vitri,
+                            text = cat4,
+                            fontFamily = AppFontFamily,
+                            isSelected = selectedCategory == cat4,
+                            onClick = {
+                                selectedCategory = if (selectedCategory == cat4) null else cat4
+                            }
+                        )
+                        val cat5 = "Khuyến mãi"
+                        CategoryItem(
+                            iconRes = R.drawable.khuyenmai,
+                            text = cat5,
+                            fontFamily = AppFontFamily,
+                            isSelected = selectedCategory == cat5,
+                            onClick = {
+                                selectedCategory = if (selectedCategory == cat5) null else cat5
+                            }
+                        )
+                        val cat6 = "Tiêu biểu"
+                        CategoryItem(
+                            iconRes = R.drawable.tieubieu,
+                            text = cat6,
+                            fontFamily = AppFontFamily,
+                            isSelected = selectedCategory == cat6,
+                            onClick = {
+                                selectedCategory = if (selectedCategory == cat6) null else cat6
+                            }
+                        )
+                    }
                 }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Tất cả món ăn",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+            }
+
+            items(allFoods) { food ->
+                FoodListItem(
+                    food = food,
+                    onClick = { onFoodClick(food.id) }
+                )
             }
         }
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .offset(y = (190).dp)
-                .zIndex(1f),
+                .zIndex(1f)
+                .clickable { onSearchClick() },
             contentAlignment = Alignment.Center
         ) {
             SearchBar()
@@ -284,7 +392,16 @@ fun HomeScreen1() {
 }
 
 @Composable
-fun CategoryItem(iconRes: Int, text: String, fontFamily: FontFamily) {
+fun CategoryItem(
+    iconRes: Int,
+    text: String,
+    fontFamily: FontFamily,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val backgroundColor = if (isSelected) Color(0xFFEA4C5C) else Color(0xFFF9F8F6)
+    val textColor = if (isSelected) Color.White else Color.Black
+
     Box(
         modifier = Modifier
             .size(90.dp, 85.dp)
@@ -294,12 +411,13 @@ fun CategoryItem(iconRes: Int, text: String, fontFamily: FontFamily) {
                 clip = false
             )
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFF9F8F6))
+            .background(backgroundColor)
             .border(
                 width = 1.dp,
                 color = Color.Gray.copy(alpha = 0.3f),
                 shape = RoundedCornerShape(12.dp)
             )
+            .clickable(onClick = onClick)
 
     ) {
         Column(
@@ -318,7 +436,7 @@ fun CategoryItem(iconRes: Int, text: String, fontFamily: FontFamily) {
             Text(
                 text = text,
                 fontSize = 13.sp,
-                color = Color.Black,
+                color = textColor,
                 fontFamily = fontFamily,
                 fontWeight = FontWeight.Normal
             )
@@ -326,7 +444,6 @@ fun CategoryItem(iconRes: Int, text: String, fontFamily: FontFamily) {
     }
 }
 
-// Shape mới được viết lại cho chính xác
 private class BottomAppBarShape(
     private val fabRadius: Float,
     private val fabYOffset: Float
@@ -365,7 +482,7 @@ private class BottomAppBarShape(
                 x2 = cutoutStart + cornerRadius * 0.5f,
                 y2 = cutoutDepth,
                 x3 = center,
-                y3 = cutoutDepth // THAM SỐ ĐÃ ĐƯỢC THÊM VÀO
+                y3 = cutoutDepth
             )
             cubicTo(
                 x1 = cutoutEnd - cornerRadius * 0.5f,
@@ -397,7 +514,15 @@ private class BottomAppBarShape(
 
 
 @Composable
-fun Bottom(fabSize: Dp, fabYOffset: Dp) {
+fun Bottom(
+    fabSize: Dp,
+    fabYOffset: Dp,
+    currentScreen: String,
+    onProfileClick: () -> Unit,
+    onCartClick: () -> Unit,
+    onHomeClick: () -> Unit = {},
+    onFavoritesClick: () -> Unit // Changed
+) {
     val fabRadius = with(LocalDensity.current) { (fabSize / 2).toPx() }
     val fabYOffsetPx = with(LocalDensity.current) { fabYOffset.toPx() }
 
@@ -414,28 +539,11 @@ fun Bottom(fabSize: Dp, fabYOffset: Dp) {
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BottomNavItem(
-                iconRes = R.drawable.home,
-                label = "Trang chủ",
-                isSelected = true
-            )
-
-            BottomNavItem(
-                iconRes = R.drawable.user,
-                label = "Tài khoản"
-            )
-
+            BottomNavItem(iconRes = R.drawable.home, label = "Trang chủ", isSelected = currentScreen == "home", onClick = onHomeClick)
+            BottomNavItem(iconRes = R.drawable.user, label = "Tài khoản", isSelected = currentScreen == "profile", onClick = onProfileClick)
             Spacer(modifier = Modifier.width(fabSize))
-
-            BottomNavItem(
-                iconRes = R.drawable.mess,
-                label = "Tin nhắn"
-            )
-
-            BottomNavItem(
-                iconRes = R.drawable.heart,
-                label = "Yêu thích"
-            )
+            BottomNavItem(iconRes = R.drawable.mess, label = "Giỏ hàng", isSelected = currentScreen == "cart", onClick = onCartClick)
+            BottomNavItem(iconRes = R.drawable.heart, label = "Yêu thích", isSelected = currentScreen == "favorites", onClick = onFavoritesClick)
         }
     }
 }
@@ -449,17 +557,14 @@ fun BottomNavItem(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .clickable { onClick() }
-            .padding(vertical = 8.dp)
+        modifier = Modifier.clickable { onClick() }
     ) {
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = label,
-            tint = if (isSelected) Color.White else Color.White.copy(alpha = 0.7f),
+            tint = if (isSelected) Color.White else Color.Black,
             modifier = Modifier.size(28.dp)
         )
-
         if (isSelected) {
             Spacer(modifier = Modifier.height(4.dp))
             Box(
@@ -470,8 +575,6 @@ fun BottomNavItem(
                         shape = CircleShape
                     )
             )
-        } else {
-            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }

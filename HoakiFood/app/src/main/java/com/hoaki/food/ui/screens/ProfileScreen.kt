@@ -2,28 +2,38 @@ package com.hoaki.food.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.hoaki.food.R
 import com.hoaki.food.ui.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    onBackClick: () -> Unit,
     onOrderHistoryClick: () -> Unit,
     onFavoritesClick: () -> Unit,
     onLogoutClick: () -> Unit,
+    onHomeClick: () -> Unit,
+    onCartClick: () -> Unit,
+    onFabClick: () -> Unit,
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
+    val userName by authViewModel.userName.collectAsState()
+    val userEmail by authViewModel.userEmail.collectAsState()
+
     var showLogoutDialog by remember { mutableStateOf(false) }
-    
+
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
@@ -47,18 +57,46 @@ fun ProfileScreen(
             }
         )
     }
-    
+
+    val fabSize = 64.dp
+    val fabYOffset = 16.dp
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Hồ sơ") },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                }
+                title = { Text("Hồ sơ") }
             )
-        }
+        },
+        bottomBar = {
+            Bottom(
+                fabSize = fabSize,
+                fabYOffset = fabYOffset,
+                currentScreen = "profile",
+                onHomeClick = onHomeClick,
+                onCartClick = onCartClick,
+                onFavoritesClick = onFavoritesClick,
+                onProfileClick = {} // Already on profile screen
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onFabClick,
+                containerColor = Color.White,
+                contentColor = Color.DarkGray,
+                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 8.dp),
+                modifier = Modifier
+                    .size(fabSize)
+                    .offset(y = fabYOffset), // Đẩy FAB xuống
+                shape = CircleShape
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.bottombut),
+                    contentDescription = "Menu",
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.Center
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -93,15 +131,15 @@ fun ProfileScreen(
                                 )
                             }
                         }
-                        
+
                         Column {
                             Text(
-                                text = "Người dùng",
+                                text = userName ?: "Người dùng",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                text = "HoakiFood Member",
+                                text = userEmail ?: "HoakiFood Member",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -109,7 +147,7 @@ fun ProfileScreen(
                     }
                 }
             }
-            
+
             // Menu Section
             item {
                 Text(
@@ -119,7 +157,7 @@ fun ProfileScreen(
                     modifier = Modifier.padding(horizontal = 8.dp)
                 )
             }
-            
+
             // Order History
             item {
                 ProfileMenuItem(
@@ -128,7 +166,7 @@ fun ProfileScreen(
                     onClick = onOrderHistoryClick
                 )
             }
-            
+
             // Favorites
             item {
                 ProfileMenuItem(
@@ -137,7 +175,7 @@ fun ProfileScreen(
                     onClick = onFavoritesClick
                 )
             }
-            
+
             // Addresses
             item {
                 ProfileMenuItem(
@@ -146,7 +184,7 @@ fun ProfileScreen(
                     onClick = { /* TODO */ }
                 )
             }
-            
+
             // Settings
             item {
                 ProfileMenuItem(
@@ -155,7 +193,7 @@ fun ProfileScreen(
                     onClick = { /* TODO */ }
                 )
             }
-            
+
             // About
             item {
                 ProfileMenuItem(
@@ -164,7 +202,7 @@ fun ProfileScreen(
                     onClick = { /* TODO */ }
                 )
             }
-            
+
             // Logout
             item {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -182,7 +220,7 @@ fun ProfileScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileMenuItem(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     title: String,
     onClick: () -> Unit,
     isDestructive: Boolean = false
@@ -202,14 +240,14 @@ fun ProfileMenuItem(
                 contentDescription = null,
                 tint = if (isDestructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
             )
-            
+
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge,
                 color = if (isDestructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f)
             )
-            
+
             Icon(
                 Icons.Default.ChevronRight,
                 contentDescription = null,
