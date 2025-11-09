@@ -18,7 +18,7 @@ fun NavGraph(
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
-    
+
     NavHost(
         navController = navController,
         startDestination = Screen.Logo.route
@@ -32,8 +32,15 @@ fun NavGraph(
                 }
             )
         }
-        
-        composable(Screen.Login.route) {
+
+        composable(
+            route = "${Screen.Login.route}?registered={registered}",
+            arguments = listOf(navArgument("registered") {
+                type = NavType.BoolType
+                defaultValue = false
+            })
+        ) { backStackEntry ->
+            val registered = backStackEntry.arguments?.getBoolean("registered") ?: false
             LoginScreen(
                 onLoginSuccess = {
                     navController.navigate(Screen.Home.route) {
@@ -42,15 +49,16 @@ fun NavGraph(
                 },
                 onNavigateToRegister = {
                     navController.navigate(Screen.Register.route)
-                }
+                },
+                showRegistrationSuccess = registered
             )
         }
-        
+
         composable(Screen.Register.route) {
             RegisterScreen1(
                 onRegisterSuccess = {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.Register.route) { inclusive = true }
+                    navController.navigate("${Screen.Login.route}?registered=true") {
+                        popUpTo(Screen.Login.route) { inclusive = true }
                     }
                 },
                 onNavigateToLogin = {
@@ -58,9 +66,9 @@ fun NavGraph(
                 }
             )
         }
-        
+
         composable(Screen.Home.route) {
-            HomeScreen(
+            HomeScreen1(
                 onFoodClick = { foodId ->
                     navController.navigate(Screen.FoodDetail.createRoute(foodId))
                 },
@@ -72,10 +80,16 @@ fun NavGraph(
                 },
                 onProfileClick = {
                     navController.navigate(Screen.Profile.route)
+                },
+                onFabClick = {
+                    navController.navigate(Screen.Cart.route)
+                },
+                onFavoritesClick = { // Added
+                    navController.navigate(Screen.Favorites.route)
                 }
             )
         }
-        
+
         composable(
             route = Screen.FoodDetail.route,
             arguments = listOf(navArgument("foodId") { type = NavType.LongType })
@@ -87,7 +101,7 @@ fun NavGraph(
                 onCartClick = { navController.navigate(Screen.Cart.route) }
             )
         }
-        
+
         composable(Screen.Cart.route) {
             CartScreen(
                 onBackClick = { navController.popBackStack() },
@@ -96,7 +110,7 @@ fun NavGraph(
                 }
             )
         }
-        
+
         composable(Screen.Checkout.route) {
             CheckoutScreen(
                 onBackClick = { navController.popBackStack() },
@@ -107,7 +121,7 @@ fun NavGraph(
                 }
             )
         }
-        
+
         composable(Screen.OrderHistory.route) {
             OrderHistoryScreen(
                 onBackClick = { navController.popBackStack() },
@@ -116,7 +130,7 @@ fun NavGraph(
                 }
             )
         }
-        
+
         composable(
             route = Screen.OrderDetail.route,
             arguments = listOf(navArgument("orderId") { type = NavType.LongType })
@@ -127,10 +141,9 @@ fun NavGraph(
                 onBackClick = { navController.popBackStack() }
             )
         }
-        
+
         composable(Screen.Profile.route) {
             ProfileScreen(
-                onBackClick = { navController.popBackStack() },
                 onOrderHistoryClick = {
                     navController.navigate(Screen.OrderHistory.route)
                 },
@@ -141,10 +154,19 @@ fun NavGraph(
                     navController.navigate(Screen.Login.route) {
                         popUpTo(0) { inclusive = true }
                     }
+                },
+                onHomeClick = {
+                    navController.navigate(Screen.Home.route) { popUpTo(Screen.Home.route) { inclusive = true } }
+                },
+                onCartClick = {
+                    navController.navigate(Screen.Cart.route)
+                },
+                onFabClick = { // Added
+                    navController.navigate(Screen.Cart.route)
                 }
             )
         }
-        
+
         composable(Screen.Search.route) {
             SearchScreen(
                 onBackClick = { navController.popBackStack() },
@@ -153,7 +175,7 @@ fun NavGraph(
                 }
             )
         }
-        
+
         composable(Screen.Favorites.route) {
             FavoritesScreen(
                 onBackClick = { navController.popBackStack() },
