@@ -1,5 +1,6 @@
 package com.hoaki.food.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -11,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.hoaki.food.ui.viewmodel.AddressViewModel
 import com.hoaki.food.ui.viewmodel.CartViewModel
 import com.hoaki.food.ui.viewmodel.CheckoutState
 import com.hoaki.food.ui.viewmodel.OrderViewModel
@@ -20,12 +22,36 @@ import com.hoaki.food.ui.viewmodel.OrderViewModel
 fun CheckoutScreen(
     onBackClick: () -> Unit,
     onOrderSuccess: (Long) -> Unit,
+    onManageAddressClick: () -> Unit,
     cartViewModel: CartViewModel = hiltViewModel(),
-    orderViewModel: OrderViewModel = hiltViewModel()
+    orderViewModel: OrderViewModel = hiltViewModel(),
+    addressViewModel: AddressViewModel = hiltViewModel()
 ) {
-    var deliveryAddress by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var note by remember { mutableStateOf("") }
+    var showAddressDialog by remember { mutableStateOf(false) }
+    var selectedAddressId by remember { mutableStateOf<Long?>(null) }
+    
+    val cartItems by cartViewModel.cartItems.collectAsState()
+    val subtotal by cartViewModel.subtotal.collectAsState()
+    val deliveryFee by cartViewModel.deliveryFee.collectAsState()
+    val total by cartViewModel.total.collectAsState()
+    val checkoutState by orderViewModel.checkoutState.collectAsState()
+    val addresses by addressViewModel.addresses.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    
+    // Auto-select default address
+    LaunchedEffect(addresses) {
+        if (selectedAddressId == null) {
+            val defaultAddress = addresses.find { it.isDefault }
+            selectedAddressId = defaultAddress?.id
+        }
+    }
+    
+    val selectedAddress = addresses.find { it.id == selectedAddressId }
+    val deliveryAddress = selectedAddress?.let {
+        "${it.fullAddress}, ${it.ward}, ${it.district}, ${it.city}"
+    } ?: ""
     
     val cartItems by cartViewModel.cartItems.collectAsState()
     val subtotal by cartViewModel.subtotal.collectAsState()
@@ -126,22 +152,82 @@ fun CheckoutScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Delivery Address
-            Card {
+            Card(
+                modifier = Modifier.clickable { showAddressDialog = true }
+            ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text(
-                        text = "Địa chỉ giao hàng",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Địa chỉ giao hàng",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        TextButton(onClick = onManageAddressClick) {
+                            Text("Quản lý")
+                        }
+                    }
                     
-                    OutlinedTextField(
-                        value = deliveryAddress,
-                        onValueChange = { deliveryAddress = it },
-                        label = { Text("Địa chỉ") },
-                        leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
+                    if (selectedAddress != null) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.LocationOn,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Column {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Text(
+                                        text = selectedAddress.label,
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    if (selectedAddress.isDefault) {
+                                        Surface(
+                                            shape = MaterialTheme.shapes.small,
+                                            color = MaterialTheme.colorScheme.primary
+                                        ) {
+                                            Text(
+                                                text = "Mặc định",
+                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = MaterialTheme.colorScheme.onPrimary
+                                            )
+                                        }
+                                    }
+                                }
+                                Text(
+                                    text = deliveryAddress,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                TextButton(
+                                    onClick = { showAddressDialog = true },
+                                    contentPadding = PaddingValues(0.dp)
+                                ) {
+                                    Text("Thay đổi địa chỉ")
+                                }
+                            }
+                        }
+                    } else {
+                        Button(
+                            onClick = onManageAddressClick,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Thêm địa chỉ giao hàng")
+                        }
+                    }
                         modifier = Modifier.fillMaxWidth(),
                         minLines = 2,
                         maxLines = 3
@@ -239,9 +325,76 @@ fun CheckoutScreen(
                             text = formatPrice(deliveryFee),
                             style = MaterialTheme.typography.bodyMedium
                         )
-                    }
+                    )
                 }
             }
+        }
+        
+        // Address Selection Dialog
+        if (showAddressDialog && addresses.isNotEmpty()) {
+            AlertDialog(
+                onDismissRequest = { showAddressDialog = false },
+                title = { Text("Chọn địa chỉ giao hàng") },
+                text = {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        addresses.forEach { address ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        selectedAddressId = address.id
+                                        showAddressDialog = false
+                                    },
+                                colors = CardDefaults.cardColors(
+                                    containerColor = if (selectedAddressId == address.id)
+                                        MaterialTheme.colorScheme.primaryContainer
+                                    else
+                                        MaterialTheme.colorScheme.surface
+                                )
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(12.dp)
+                                ) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Text(
+                                            text = address.label,
+                                            style = MaterialTheme.typography.titleSmall,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        if (address.isDefault) {
+                                            Surface(
+                                                shape = MaterialTheme.shapes.small,
+                                                color = MaterialTheme.colorScheme.primary
+                                            ) {
+                                                Text(
+                                                    text = "Mặc định",
+                                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    color = MaterialTheme.colorScheme.onPrimary
+                                                )
+                                            }
+                                        }
+                                    }
+                                    Text(
+                                        text = "${address.fullAddress}, ${address.ward}, ${address.district}, ${address.city}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showAddressDialog = false }) {
+                        Text("Đóng")
+                    }
+                }
+            )
         }
     }
 }

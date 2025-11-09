@@ -27,6 +27,7 @@ fun ProfileScreen(
     onHomeClick: () -> Unit,
     onCartClick: () -> Unit,
     onFabClick: () -> Unit,
+    onAddressClick: () -> Unit,
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val userName by authViewModel.userName.collectAsState()
@@ -181,7 +182,7 @@ fun ProfileScreen(
                 ProfileMenuItem(
                     icon = Icons.Default.LocationOn,
                     title = "Địa chỉ giao hàng",
-                    onClick = { /* TODO */ }
+                    onClick = onAddressClick
                 )
             }
 

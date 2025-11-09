@@ -124,6 +124,9 @@ fun NavGraph(
                     navController.navigate(Screen.OrderDetail.createRoute(orderId)) {
                         popUpTo(Screen.Home.route)
                     }
+                },
+                onManageAddressClick = {
+                    navController.navigate(Screen.AddressList.route)
                 }
             )
         }
@@ -175,6 +178,9 @@ fun NavGraph(
                 },
                 onFabClick = { // Added
                     navController.navigate(Screen.Cart.route) { launchSingleTop = true }
+                },
+                onAddressClick = {
+                    navController.navigate(Screen.AddressList.route)
                 }
             )
         }
@@ -194,6 +200,38 @@ fun NavGraph(
                 onFoodClick = { foodId ->
                     navController.navigate(Screen.FoodDetail.createRoute(foodId))
                 }
+            )
+        }
+
+        composable(Screen.AddressList.route) {
+            AddressListScreen(
+                onBackClick = { navController.popBackStack() },
+                onAddAddressClick = {
+                    navController.navigate(Screen.AddAddress.route)
+                },
+                onEditAddressClick = { addressId ->
+                    navController.navigate(Screen.EditAddress.createRoute(addressId))
+                }
+            )
+        }
+
+        composable(Screen.AddAddress.route) {
+            AddAddressScreen(
+                addressId = null,
+                onBackClick = { navController.popBackStack() },
+                onSaveSuccess = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.EditAddress.route,
+            arguments = listOf(navArgument("addressId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val addressId = backStackEntry.arguments?.getLong("addressId") ?: 0L
+            AddAddressScreen(
+                addressId = addressId,
+                onBackClick = { navController.popBackStack() },
+                onSaveSuccess = { navController.popBackStack() }
             )
         }
     }

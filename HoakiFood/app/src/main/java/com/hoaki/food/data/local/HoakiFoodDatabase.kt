@@ -12,9 +12,10 @@ import com.hoaki.food.data.model.*
         Category::class,
         Food::class,
         CartItem::class,
-        Order::class
+        Order::class,
+        Address::class
     ],
-    version = 2, // Incremented version for discount field
+    version = 3, // Added Address entity
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -24,4 +25,5 @@ abstract class HoakiFoodDatabase : RoomDatabase() {
     abstract fun foodDao(): FoodDao
     abstract fun cartDao(): CartDao
     abstract fun orderDao(): OrderDao
+    abstract fun addressDao(): AddressDao
 }
