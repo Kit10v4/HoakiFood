@@ -21,6 +21,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.hoaki.food.data.model.Category
 import com.hoaki.food.data.model.Food
+import com.hoaki.food.ui.components.PriceWithDiscount
+import com.hoaki.food.ui.components.SaleBadge
 import com.hoaki.food.ui.viewmodel.CartViewModel
 import com.hoaki.food.ui.viewmodel.HomeViewModel
 import java.text.NumberFormat
@@ -225,6 +227,17 @@ fun PopularFoodCard(
                     contentScale = ContentScale.Crop
                 )
                 
+                // Sale Badge - Top Left
+                if (food.discount > 0) {
+                    SaleBadge(
+                        discount = food.discount,
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(8.dp)
+                    )
+                }
+                
+                // Rating - Top Right
                 Surface(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -261,11 +274,11 @@ fun PopularFoodCard(
                     overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = formatPrice(food.price),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold
+                
+                // Price with discount
+                PriceWithDiscount(
+                    originalPrice = food.price,
+                    discount = food.discount
                 )
             }
         }
@@ -289,14 +302,28 @@ fun FoodListItem(
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
-            AsyncImage(
-                model = food.imageUrl ?: "https://via.placeholder.com/80",
-                contentDescription = food.name,
+            Box(
                 modifier = Modifier
                     .size(80.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
-            )
+                    .clip(RoundedCornerShape(8.dp))
+            ) {
+                AsyncImage(
+                    model = food.imageUrl ?: "https://via.placeholder.com/80",
+                    contentDescription = food.name,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                
+                // Sale Badge on image
+                if (food.discount > 0) {
+                    SaleBadge(
+                        discount = food.discount,
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(4.dp)
+                    )
+                }
+            }
             
             Spacer(modifier = Modifier.width(12.dp))
             
@@ -322,27 +349,28 @@ fun FoodListItem(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(
-                        Icons.Default.Star,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = "${food.rating} (${food.reviewCount})",
-                        style = MaterialTheme.typography.bodySmall
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Default.Star,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "${food.rating} (${food.reviewCount})",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
                     
-                    Spacer(modifier = Modifier.weight(1f))
-                    
-                    Text(
-                        text = formatPrice(food.price),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
+                    // Price with discount
+                    PriceWithDiscount(
+                        originalPrice = food.price,
+                        discount = food.discount
                     )
                 }
             }
