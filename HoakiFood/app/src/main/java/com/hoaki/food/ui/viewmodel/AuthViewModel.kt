@@ -29,6 +29,12 @@ class AuthViewModel @Inject constructor(
     val isLoggedIn: StateFlow<Boolean> = userRepository.isLoggedIn()
         .stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), false)
 
+    val userName: StateFlow<String?> = userRepository.userName
+        .stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), null)
+
+    val userEmail: StateFlow<String?> = userRepository.userEmail
+        .stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), null)
+
     fun login(email: String, password: String) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading

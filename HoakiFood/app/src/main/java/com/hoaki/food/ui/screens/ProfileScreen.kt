@@ -1,5 +1,6 @@
 package com.hoaki.food.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -36,9 +37,12 @@ fun ProfileScreen(
     onLogoutClick: () -> Unit,
     onHomeClick: () -> Unit,
     onCartClick: () -> Unit,
-    onFabClick: () -> Unit, // Added
+    onFabClick: () -> Unit, // Changed
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
+    val userName by authViewModel.userName.collectAsState()
+    val userEmail by authViewModel.userEmail.collectAsState()
+
     var showLogoutDialog by remember { mutableStateOf(false) }
 
     if (showLogoutDialog) {
@@ -140,12 +144,12 @@ fun ProfileScreen(
 
                         Column {
                             Text(
-                                text = "Người dùng",
+                                text = userName ?: "Người dùng",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                text = "HoakiFood Member",
+                                text = userEmail ?: "HoakiFood Member",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

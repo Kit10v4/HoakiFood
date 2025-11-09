@@ -18,6 +18,9 @@ class UserRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth
 ) {
 
+    val userEmail: Flow<String?> = userPreferences.userEmailFlow
+    val userName: Flow<String?> = userPreferences.userNameFlow
+
     fun getUserById(userId: Long): Flow<User?> = userDao.getUserById(userId)
 
     suspend fun login(email: String, password: String): Result<User> {

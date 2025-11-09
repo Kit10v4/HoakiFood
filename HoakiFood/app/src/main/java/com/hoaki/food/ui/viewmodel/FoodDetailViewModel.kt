@@ -34,9 +34,6 @@ class FoodDetailViewModel @Inject constructor(
     private val _addToCartState = MutableStateFlow<AddToCartState>(AddToCartState.Idle)
     val addToCartState: StateFlow<AddToCartState> = _addToCartState.asStateFlow()
     
-    private val currentUserId: StateFlow<Long?> = userRepository.getCurrentUserId()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
-    
     fun setFoodId(foodId: Long) {
         _foodId.value = foodId
     }
@@ -53,10 +50,11 @@ class FoodDetailViewModel @Inject constructor(
     
     fun addToCart() {
         viewModelScope.launch {
+            val isLoggedIn = userRepository.isLoggedIn().first()
+            val userId = userRepository.getCurrentUserId().first()
             val foodItem = food.value
-            val userId = currentUserId.value
             
-            if (foodItem != null && userId != null) {
+            if (isLoggedIn && userId != null && foodItem != null) {
                 _addToCartState.value = AddToCartState.Loading
                 val result = cartRepository.addToCart(userId, foodItem, quantity.value)
                 _addToCartState.value = if (result.isSuccess) {
