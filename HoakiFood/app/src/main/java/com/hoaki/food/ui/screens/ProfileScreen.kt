@@ -1,8 +1,5 @@
 package com.hoaki.food.ui.screens
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -12,18 +9,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hoaki.food.R
@@ -37,7 +26,7 @@ fun ProfileScreen(
     onLogoutClick: () -> Unit,
     onHomeClick: () -> Unit,
     onCartClick: () -> Unit,
-    onFabClick: () -> Unit, // Changed
+    onFabClick: () -> Unit,
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val userName by authViewModel.userName.collectAsState()
@@ -79,24 +68,25 @@ fun ProfileScreen(
             )
         },
         bottomBar = {
-            ProfileScreenBottomBar(
+            Bottom(
                 fabSize = fabSize,
                 fabYOffset = fabYOffset,
+                currentScreen = "profile",
                 onHomeClick = onHomeClick,
                 onCartClick = onCartClick,
-                onFavoritesClick = onFavoritesClick, // Changed
+                onFavoritesClick = onFavoritesClick,
                 onProfileClick = {} // Already on profile screen
             )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onFabClick, // Changed
+                onClick = onFabClick,
                 containerColor = Color.White,
                 contentColor = Color.DarkGray,
                 elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 8.dp),
                 modifier = Modifier
                     .size(fabSize)
-                    .offset(y = fabYOffset),
+                    .offset(y = fabYOffset), // Đẩy FAB xuống
                 shape = CircleShape
             ) {
                 Icon(
@@ -230,7 +220,7 @@ fun ProfileScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileMenuItem(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     title: String,
     onClick: () -> Unit,
     isDestructive: Boolean = false
@@ -263,148 +253,6 @@ fun ProfileMenuItem(
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
-        }
-    }
-}
-
-// --- Copied from HomeScreen1.kt ---
-
-private class ProfileScreenBottomAppBarShape(
-    private val fabRadius: Float,
-    private val fabYOffset: Float
-) : Shape {
-    override fun createOutline(
-        size: Size,
-        layoutDirection: LayoutDirection,
-        density: Density
-    ): Outline {
-        val path = Path().apply {
-            val cutoutRadius = fabRadius + 5.dp.toPx(density)
-            val cutoutWidth = cutoutRadius * 2
-            val cutoutDepth = fabYOffset + fabRadius * 0.5f
-            val cornerRadius = 24.dp.toPx(density)
-
-            val center = size.width / 2f
-            val cutoutStart = center - cutoutWidth / 2
-            val cutoutEnd = center + cutoutWidth / 2
-
-            moveTo(0f, cornerRadius)
-            arcTo(
-                rect = androidx.compose.ui.geometry.Rect(0f, 0f, 2 * cornerRadius, 2 * cornerRadius),
-                startAngleDegrees = 180f,
-                sweepAngleDegrees = 90f,
-                forceMoveTo = false
-            )
-            lineTo(cutoutStart - cornerRadius, 0f)
-            cubicTo(cutoutStart, 0f, cutoutStart + cornerRadius * 0.5f, cutoutDepth, center, cutoutDepth)
-            cubicTo(cutoutEnd - cornerRadius * 0.5f, cutoutDepth, cutoutEnd, 0f, cutoutEnd + cornerRadius, 0f)
-            lineTo(size.width - cornerRadius, 0f)
-            arcTo(
-                rect = androidx.compose.ui.geometry.Rect(size.width - 2 * cornerRadius, 0f, size.width, 2 * cornerRadius),
-                startAngleDegrees = 270f,
-                sweepAngleDegrees = 90f,
-                forceMoveTo = false
-            )
-            lineTo(size.width, size.height)
-            lineTo(0f, size.height)
-            close()
-        }
-        return Outline.Generic(path)
-    }
-
-    private fun Dp.toPx(density: Density) = with(density) { toPx() }
-}
-
-@Composable
-private fun ProfileScreenBottomBar(
-    fabSize: Dp,
-    fabYOffset: Dp,
-    onProfileClick: () -> Unit,
-    onCartClick: () -> Unit,
-    onHomeClick: () -> Unit,
-    onFavoritesClick: () -> Unit // Changed
-) {
-    val fabRadius = with(LocalDensity.current) { (fabSize / 2).toPx() }
-    val fabYOffsetPx = with(LocalDensity.current) { fabYOffset.toPx() }
-
-    BottomAppBar(
-        modifier = Modifier
-            .height(65.dp)
-            .clip(ProfileScreenBottomAppBarShape(fabRadius = fabRadius, fabYOffset = fabYOffsetPx)),
-        containerColor = Color(0xFFEA4C5C),
-        contentColor = Color.White,
-        tonalElevation = 0.dp
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            ProfileScreenBottomNavItem(
-                iconRes = R.drawable.home,
-                label = "Trang chủ",
-                isSelected = false, // Not selected
-                onClick = onHomeClick
-            )
-
-            ProfileScreenBottomNavItem(
-                iconRes = R.drawable.user,
-                label = "Tài khoản",
-                isSelected = true, // SELECTED!
-                onClick = onProfileClick
-            )
-
-            Spacer(modifier = Modifier.width(fabSize))
-
-            ProfileScreenBottomNavItem(
-                iconRes = R.drawable.mess,
-                label = "Giỏ hàng",
-                isSelected = false,
-                onClick = onCartClick
-            )
-
-            ProfileScreenBottomNavItem(
-                iconRes = R.drawable.heart,
-                label = "Yêu thích", // Changed
-                isSelected = false,
-                onClick = onFavoritesClick // Changed
-            )
-        }
-    }
-}
-
-@Composable
-private fun ProfileScreenBottomNavItem(
-    iconRes: Int,
-    label: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .clickable { onClick() }
-            .padding(vertical = 8.dp)
-    ) {
-        Icon(
-            painter = painterResource(id = iconRes),
-            contentDescription = label,
-            tint = if (isSelected) Color.White else Color.White.copy(alpha = 0.7f),
-            modifier = Modifier.size(28.dp)
-        )
-
-        if (isSelected) {
-            Spacer(modifier = Modifier.height(4.dp))
-            Box(
-                modifier = Modifier
-                    .size(6.dp)
-                    .background(
-                        color = Color.White,
-                        shape = CircleShape
-                    )
-            )
-        } else {
-            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }

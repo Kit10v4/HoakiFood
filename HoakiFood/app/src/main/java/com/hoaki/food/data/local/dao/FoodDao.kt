@@ -17,6 +17,9 @@ interface FoodDao {
     
     @Query("SELECT * FROM foods WHERE isPopular = 1 ORDER BY rating DESC LIMIT 10")
     fun getPopularFoods(): Flow<List<Food>>
+
+    @Query("SELECT * FROM foods WHERE discount > 0")
+    fun getDiscountedFoods(): Flow<List<Food>>
     
     @Query("SELECT * FROM foods WHERE isFavorite = 1")
     fun getFavoriteFoods(): Flow<List<Food>>

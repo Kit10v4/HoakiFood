@@ -73,19 +73,25 @@ fun NavGraph(
                     navController.navigate(Screen.FoodDetail.createRoute(foodId))
                 },
                 onCartClick = {
-                    navController.navigate(Screen.Cart.route)
+                    navController.navigate(Screen.Cart.route) { launchSingleTop = true }
                 },
                 onSearchClick = {
                     navController.navigate(Screen.Search.route)
                 },
                 onProfileClick = {
-                    navController.navigate(Screen.Profile.route)
+                    navController.navigate(Screen.Profile.route) {
+                        launchSingleTop = true
+                        popUpTo(Screen.Home.route)
+                    }
                 },
                 onFabClick = {
-                    navController.navigate(Screen.Cart.route)
+                    navController.navigate(Screen.Cart.route) { launchSingleTop = true }
                 },
                 onFavoritesClick = { // Added
-                    navController.navigate(Screen.Favorites.route)
+                    navController.navigate(Screen.Favorites.route) { 
+                        launchSingleTop = true 
+                        popUpTo(Screen.Home.route)
+                    }
                 }
             )
         }
@@ -148,7 +154,10 @@ fun NavGraph(
                     navController.navigate(Screen.OrderHistory.route)
                 },
                 onFavoritesClick = {
-                    navController.navigate(Screen.Favorites.route)
+                    navController.navigate(Screen.Favorites.route) { 
+                        launchSingleTop = true 
+                        popUpTo(Screen.Home.route)
+                    }
                 },
                 onLogoutClick = {
                     navController.navigate(Screen.Login.route) {
@@ -156,13 +165,16 @@ fun NavGraph(
                     }
                 },
                 onHomeClick = {
-                    navController.navigate(Screen.Home.route) { popUpTo(Screen.Home.route) { inclusive = true } }
+                    navController.navigate(Screen.Home.route) { 
+                        launchSingleTop = true
+                        popUpTo(Screen.Home.route) { inclusive = true } 
+                    }
                 },
                 onCartClick = {
-                    navController.navigate(Screen.Cart.route)
+                    navController.navigate(Screen.Cart.route) { launchSingleTop = true }
                 },
                 onFabClick = { // Added
-                    navController.navigate(Screen.Cart.route)
+                    navController.navigate(Screen.Cart.route) { launchSingleTop = true }
                 }
             )
         }

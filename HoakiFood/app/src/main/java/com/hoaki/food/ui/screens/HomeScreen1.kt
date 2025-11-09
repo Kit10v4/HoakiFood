@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hoaki.food.R
+import com.hoaki.food.data.model.Food
 import com.hoaki.food.ui.viewmodel.HomeViewModel
 
 val AppFontFamily = FontFamily(
@@ -211,6 +212,7 @@ fun HomeScreen1(
     val allFoods by viewModel.allFoods.collectAsState()
     val fabSize = 64.dp
     val fabYOffset = 16.dp // Điều chỉnh độ sâu của FAB
+    var selectedCategory by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
         topBar = {
@@ -220,6 +222,7 @@ fun HomeScreen1(
             Bottom(
                 fabSize = fabSize,
                 fabYOffset = fabYOffset,
+                currentScreen = "home",
                 onProfileClick = onProfileClick,
                 onCartClick = onCartClick,
                 onFavoritesClick = onFavoritesClick
@@ -271,9 +274,36 @@ fun HomeScreen1(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        CategoryItem(R.drawable.anvat, "Ăn vặt", AppFontFamily)
-                        CategoryItem(R.drawable.doan, "Đồ ăn", AppFontFamily)
-                        CategoryItem(R.drawable.thucuong, "Thức Uống", AppFontFamily)
+                        val cat1 = "Ăn vặt"
+                        CategoryItem(
+                            iconRes = R.drawable.anvat,
+                            text = cat1,
+                            fontFamily = AppFontFamily,
+                            isSelected = selectedCategory == cat1,
+                            onClick = {
+                                selectedCategory = if (selectedCategory == cat1) null else cat1
+                            }
+                        )
+                        val cat2 = "Đồ ăn"
+                        CategoryItem(
+                            iconRes = R.drawable.doan,
+                            text = cat2,
+                            fontFamily = AppFontFamily,
+                            isSelected = selectedCategory == cat2,
+                            onClick = {
+                                selectedCategory = if (selectedCategory == cat2) null else cat2
+                            }
+                        )
+                        val cat3 = "Thức Uống"
+                        CategoryItem(
+                            iconRes = R.drawable.thucuong,
+                            text = cat3,
+                            fontFamily = AppFontFamily,
+                            isSelected = selectedCategory == cat3,
+                            onClick = {
+                                selectedCategory = if (selectedCategory == cat3) null else cat3
+                            }
+                        )
                     }
                 }
             }
@@ -294,9 +324,36 @@ fun HomeScreen1(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        CategoryItem(R.drawable.vitri, "Gần bạn", AppFontFamily)
-                        CategoryItem(R.drawable.khuyenmai, "Khuyến mãi", AppFontFamily)
-                        CategoryItem(R.drawable.tieubieu, "Tiêu biểu", AppFontFamily)
+                        val cat4 = "Gần bạn"
+                        CategoryItem(
+                            iconRes = R.drawable.vitri,
+                            text = cat4,
+                            fontFamily = AppFontFamily,
+                            isSelected = selectedCategory == cat4,
+                            onClick = {
+                                selectedCategory = if (selectedCategory == cat4) null else cat4
+                            }
+                        )
+                        val cat5 = "Khuyến mãi"
+                        CategoryItem(
+                            iconRes = R.drawable.khuyenmai,
+                            text = cat5,
+                            fontFamily = AppFontFamily,
+                            isSelected = selectedCategory == cat5,
+                            onClick = {
+                                selectedCategory = if (selectedCategory == cat5) null else cat5
+                            }
+                        )
+                        val cat6 = "Tiêu biểu"
+                        CategoryItem(
+                            iconRes = R.drawable.tieubieu,
+                            text = cat6,
+                            fontFamily = AppFontFamily,
+                            isSelected = selectedCategory == cat6,
+                            onClick = {
+                                selectedCategory = if (selectedCategory == cat6) null else cat6
+                            }
+                        )
                     }
                 }
             }
@@ -335,7 +392,16 @@ fun HomeScreen1(
 }
 
 @Composable
-fun CategoryItem(iconRes: Int, text: String, fontFamily: FontFamily) {
+fun CategoryItem(
+    iconRes: Int,
+    text: String,
+    fontFamily: FontFamily,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val backgroundColor = if (isSelected) Color(0xFFEA4C5C) else Color(0xFFF9F8F6)
+    val textColor = if (isSelected) Color.White else Color.Black
+
     Box(
         modifier = Modifier
             .size(90.dp, 85.dp)
@@ -345,12 +411,13 @@ fun CategoryItem(iconRes: Int, text: String, fontFamily: FontFamily) {
                 clip = false
             )
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFF9F8F6))
+            .background(backgroundColor)
             .border(
                 width = 1.dp,
                 color = Color.Gray.copy(alpha = 0.3f),
                 shape = RoundedCornerShape(12.dp)
             )
+            .clickable(onClick = onClick)
 
     ) {
         Column(
@@ -369,7 +436,7 @@ fun CategoryItem(iconRes: Int, text: String, fontFamily: FontFamily) {
             Text(
                 text = text,
                 fontSize = 13.sp,
-                color = Color.Black,
+                color = textColor,
                 fontFamily = fontFamily,
                 fontWeight = FontWeight.Normal
             )
@@ -450,6 +517,7 @@ private class BottomAppBarShape(
 fun Bottom(
     fabSize: Dp,
     fabYOffset: Dp,
+    currentScreen: String,
     onProfileClick: () -> Unit,
     onCartClick: () -> Unit,
     onHomeClick: () -> Unit = {},
@@ -471,35 +539,11 @@ fun Bottom(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BottomNavItem(
-                iconRes = R.drawable.home,
-                label = "Trang chủ",
-                isSelected = true, // For now, Home is always selected
-                onClick = onHomeClick
-            )
-
-            BottomNavItem(
-                iconRes = R.drawable.user,
-                label = "Tài khoản",
-                isSelected = false,
-                onClick = onProfileClick
-            )
-
+            BottomNavItem(iconRes = R.drawable.home, label = "Trang chủ", isSelected = currentScreen == "home", onClick = onHomeClick)
+            BottomNavItem(iconRes = R.drawable.user, label = "Tài khoản", isSelected = currentScreen == "profile", onClick = onProfileClick)
             Spacer(modifier = Modifier.width(fabSize))
-
-            BottomNavItem(
-                iconRes = R.drawable.mess,
-                label = "Giỏ hàng",
-                isSelected = false,
-                onClick = onCartClick // Gắn sự kiện click
-            )
-
-            BottomNavItem(
-                iconRes = R.drawable.heart,
-                label = "Yêu thích", // Changed
-                isSelected = false,
-                onClick = onFavoritesClick // Changed
-            )
+            BottomNavItem(iconRes = R.drawable.mess, label = "Giỏ hàng", isSelected = currentScreen == "cart", onClick = onCartClick)
+            BottomNavItem(iconRes = R.drawable.heart, label = "Yêu thích", isSelected = currentScreen == "favorites", onClick = onFavoritesClick)
         }
     }
 }
@@ -513,17 +557,14 @@ fun BottomNavItem(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .clickable { onClick() }
-            .padding(vertical = 8.dp)
+        modifier = Modifier.clickable { onClick() }
     ) {
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = label,
-            tint = if (isSelected) Color.White else Color.White.copy(alpha = 0.7f),
+            tint = if (isSelected) Color.White else Color.Black,
             modifier = Modifier.size(28.dp)
         )
-
         if (isSelected) {
             Spacer(modifier = Modifier.height(4.dp))
             Box(
@@ -534,8 +575,6 @@ fun BottomNavItem(
                         shape = CircleShape
                     )
             )
-        } else {
-            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }
