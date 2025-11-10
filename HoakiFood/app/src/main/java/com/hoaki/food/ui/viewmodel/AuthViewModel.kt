@@ -63,6 +63,18 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    fun loginWithGoogle(email: String, displayName: String) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            val result = userRepository.loginWithGoogle(email, displayName)
+            result.onSuccess {
+                _authState.value = AuthState.Success("Đăng nhập Google thành công")
+            }.onFailure {
+                _authState.value = AuthState.Error(it.message ?: "Đã có lỗi xảy ra")
+            }
+        }
+    }
+
     fun logout() {
         viewModelScope.launch {
             googleSignInClient.signOut().addOnCompleteListener { 

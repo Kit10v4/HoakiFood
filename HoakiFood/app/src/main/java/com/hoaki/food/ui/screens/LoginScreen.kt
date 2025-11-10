@@ -226,6 +226,13 @@ fun LoginScreen(
                                         val user = authTask.result?.user
                                         Log.d("GoogleAuth", "Firebase sign-in successful: ${user?.displayName} (${user?.email})")
 
+                                        // Save to local database and preferences
+                                        user?.let {
+                                            val email = it.email ?: ""
+                                            val displayName = it.displayName ?: email.substringBefore('@')
+                                            viewModel.loginWithGoogle(email, displayName)
+                                        }
+
                                         // Ensure callback runs on main thread
                                         coroutineScope.launch {
                                             onLoginSuccess()

@@ -210,9 +210,14 @@ fun HomeScreen1(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val allFoods by viewModel.allFoods.collectAsState()
+    val selectedCategoryId by viewModel.selectedCategoryId.collectAsState()
+    val foodsByCategory by viewModel.foodsByCategory.collectAsState()
+    
     val fabSize = 64.dp
     val fabYOffset = 16.dp // Điều chỉnh độ sâu của FAB
-    var selectedCategory by remember { mutableStateOf<String?>(null) }
+    
+    // Display foods based on selected category
+    val displayedFoods = if (selectedCategoryId != null) foodsByCategory else allFoods
 
     Scaffold(
         topBar = {
@@ -274,34 +279,31 @@ fun HomeScreen1(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val cat1 = "Ăn vặt"
                         CategoryItem(
                             iconRes = R.drawable.anvat,
-                            text = cat1,
+                            text = "Ăn vặt",
                             fontFamily = AppFontFamily,
-                            isSelected = selectedCategory == cat1,
+                            isSelected = selectedCategoryId == 2L,
                             onClick = {
-                                selectedCategory = if (selectedCategory == cat1) null else cat1
+                                viewModel.selectCategory(2L)
                             }
                         )
-                        val cat2 = "Đồ ăn"
                         CategoryItem(
                             iconRes = R.drawable.doan,
-                            text = cat2,
+                            text = "Đồ ăn",
                             fontFamily = AppFontFamily,
-                            isSelected = selectedCategory == cat2,
+                            isSelected = selectedCategoryId == 1L,
                             onClick = {
-                                selectedCategory = if (selectedCategory == cat2) null else cat2
+                                viewModel.selectCategory(1L)
                             }
                         )
-                        val cat3 = "Thức Uống"
                         CategoryItem(
                             iconRes = R.drawable.thucuong,
-                            text = cat3,
+                            text = "Thức Uống",
                             fontFamily = AppFontFamily,
-                            isSelected = selectedCategory == cat3,
+                            isSelected = selectedCategoryId == 3L,
                             onClick = {
-                                selectedCategory = if (selectedCategory == cat3) null else cat3
+                                viewModel.selectCategory(3L)
                             }
                         )
                     }
@@ -324,34 +326,31 @@ fun HomeScreen1(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val cat4 = "Gần bạn"
                         CategoryItem(
                             iconRes = R.drawable.vitri,
-                            text = cat4,
+                            text = "Gần bạn",
                             fontFamily = AppFontFamily,
-                            isSelected = selectedCategory == cat4,
+                            isSelected = selectedCategoryId == 4L,
                             onClick = {
-                                selectedCategory = if (selectedCategory == cat4) null else cat4
+                                viewModel.selectCategory(4L)
                             }
                         )
-                        val cat5 = "Khuyến mãi"
                         CategoryItem(
                             iconRes = R.drawable.khuyenmai,
-                            text = cat5,
+                            text = "Khuyến mãi",
                             fontFamily = AppFontFamily,
-                            isSelected = selectedCategory == cat5,
+                            isSelected = selectedCategoryId == 5L,
                             onClick = {
-                                selectedCategory = if (selectedCategory == cat5) null else cat5
+                                viewModel.selectCategory(5L)
                             }
                         )
-                        val cat6 = "Tiêu biểu"
                         CategoryItem(
                             iconRes = R.drawable.tieubieu,
-                            text = cat6,
+                            text = "Tiêu biểu",
                             fontFamily = AppFontFamily,
-                            isSelected = selectedCategory == cat6,
+                            isSelected = selectedCategoryId == -1L,
                             onClick = {
-                                selectedCategory = if (selectedCategory == cat6) null else cat6
+                                viewModel.selectCategory(-1L)
                             }
                         )
                     }
@@ -370,7 +369,7 @@ fun HomeScreen1(
                 )
             }
 
-            items(allFoods) { food ->
+            items(displayedFoods) { food ->
                 FoodListItem(
                     food = food,
                     onClick = { onFoodClick(food.id) }

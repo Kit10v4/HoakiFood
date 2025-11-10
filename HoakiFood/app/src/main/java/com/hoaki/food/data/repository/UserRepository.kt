@@ -45,6 +45,28 @@ class UserRepository @Inject constructor(
         }
     }
 
+    suspend fun loginWithGoogle(email: String, displayName: String): Result<User> {
+        return try {
+            // Find user in local DB or create a new one
+            var localUser = userDao.getUserByEmail(email)
+            if (localUser == null) {
+                localUser = User(
+                    email = email,
+                    fullName = displayName,
+                    phone = "",
+                    password = ""
+                )
+                val newUserId = userDao.insertUser(localUser)
+                localUser = localUser.copy(id = newUserId)
+            }
+            // Save user session to preferences
+            userPreferences.saveUserSession(localUser.id, localUser.email, localUser.fullName)
+            Result.success(localUser)
+        } catch (e: Exception) {
+            Result.failure(Exception(e.message ?: "Đăng nhập Google thất bại."))
+        }
+    }
+
     suspend fun register(email: String, password: String, fullName: String, phone: String): Result<User> {
         return try {
             val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()

@@ -2,6 +2,8 @@ package com.hoaki.food.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -21,6 +23,31 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
     
+    private val MIGRATION_1_2 = object : Migration(1, 2) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            // Migration from version 1 to 2: Add discount field to foods table
+            database.execSQL("ALTER TABLE foods ADD COLUMN discount INTEGER NOT NULL DEFAULT 0")
+        }
+    }
+    
+    private val MIGRATION_2_3 = object : Migration(2, 3) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            // Migration from version 2 to 3: Add addresses table
+            database.execSQL("""
+                CREATE TABLE IF NOT EXISTS `addresses` (
+                    `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    `userId` INTEGER NOT NULL,
+                    `label` TEXT NOT NULL,
+                    `fullAddress` TEXT NOT NULL,
+                    `city` TEXT NOT NULL,
+                    `district` TEXT NOT NULL,
+                    `ward` TEXT NOT NULL,
+                    `isDefault` INTEGER NOT NULL
+                )
+            """)
+        }
+    }
+    
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): HoakiFoodDatabase {
@@ -28,7 +55,9 @@ object AppModule {
             context,
             HoakiFoodDatabase::class.java,
             "hoakifood_database"
-        ).fallbackToDestructiveMigration()
+        )
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .fallbackToDestructiveMigration()
             .build()
     }
 

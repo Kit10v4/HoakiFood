@@ -29,6 +29,7 @@ class HomeViewModel @Inject constructor(
     val foodsByCategory: StateFlow<List<Food>> = _selectedCategoryId.flatMapLatest { categoryId ->
         when (categoryId) {
             null -> foodRepository.getAllFoods() // Show all if no category is selected
+            -1L -> foodRepository.getPopularFoods() // Special case for "Tiêu biểu"
             5L -> foodRepository.getDiscountedFoods() // Special case for "Khuyến mãi"
             else -> foodRepository.getFoodsByCategory(categoryId)
         }
