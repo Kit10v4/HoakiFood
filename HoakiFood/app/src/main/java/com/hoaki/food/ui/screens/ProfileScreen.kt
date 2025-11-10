@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hoaki.food.R
 import com.hoaki.food.ui.viewmodel.AuthViewModel
+import com.hoaki.food.ui.viewmodel.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,10 +29,11 @@ fun ProfileScreen(
     onCartClick: () -> Unit,
     onFabClick: () -> Unit,
     onAddressClick: () -> Unit,
-    authViewModel: AuthViewModel = hiltViewModel()
+    authViewModel: AuthViewModel = hiltViewModel(),
+    profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
-    val userName by authViewModel.userName.collectAsState()
-    val userEmail by authViewModel.userEmail.collectAsState()
+    val userName by profileViewModel.userName.collectAsState()
+    val userEmail by profileViewModel.userEmail.collectAsState()
 
     var showLogoutDialog by remember { mutableStateOf(false) }
 

@@ -2,7 +2,11 @@ package com.hoaki.food.di
 
 import android.content.Context
 import androidx.room.Room
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.gson.Gson
+import com.hoaki.food.R
 import com.hoaki.food.data.local.HoakiFoodDatabase
 import com.hoaki.food.data.local.dao.*
 import com.hoaki.food.data.preferences.UserPreferences
@@ -26,6 +30,16 @@ object AppModule {
             "hoakifood_database"
         ).fallbackToDestructiveMigration()
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideGoogleSignInClient(@ApplicationContext context: Context): GoogleSignInClient {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(context.getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        return GoogleSignIn.getClient(context, gso)
     }
     
     @Provides
