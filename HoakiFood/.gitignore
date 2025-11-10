@@ -28,4 +28,4 @@ captures/
 
 # Sensitive files
 keystore.properties
-app/google-services.json
+google-services.json
