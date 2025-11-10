@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hoaki.food.data.model.Address
 import com.hoaki.food.data.repository.AddressRepository
-import com.hoaki.food.data.repository.UserPreferencesRepository
+import com.hoaki.food.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -13,10 +13,10 @@ import javax.inject.Inject
 @HiltViewModel
 class AddressViewModel @Inject constructor(
     private val addressRepository: AddressRepository,
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
-    private val userId = userPreferencesRepository.userId
+    private val userId = userRepository.getCurrentUserId()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     val addresses = userId.flatMapLatest { id ->

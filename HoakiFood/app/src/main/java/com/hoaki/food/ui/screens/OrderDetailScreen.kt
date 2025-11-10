@@ -16,6 +16,10 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.hoaki.food.data.model.CartItem
 import com.hoaki.food.data.model.Order
+import com.hoaki.food.ui.composables.InfoRow
+import com.hoaki.food.ui.composables.OrderStatusBadge
+import com.hoaki.food.ui.formatDate
+import com.hoaki.food.ui.formatPrice
 import com.hoaki.food.ui.viewmodel.OrderViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -231,26 +235,5 @@ fun OrderDetailScreen(
                 CircularProgressIndicator()
             }
         }
-    }
-}
-
-@Composable
-fun InfoRow(
-    label: String,
-    value: String
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium
-        )
     }
 }

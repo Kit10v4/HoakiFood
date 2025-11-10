@@ -57,6 +57,12 @@ object AppModule {
     fun provideOrderDao(database: HoakiFoodDatabase): OrderDao {
         return database.orderDao()
     }
+
+    @Provides
+    @Singleton
+    fun provideAddressDao(database: HoakiFoodDatabase): AddressDao {
+        return database.addressDao()
+    }
     
     @Provides
     @Singleton

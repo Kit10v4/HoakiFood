@@ -8,10 +8,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.hoaki.food.data.model.Address
+import com.hoaki.food.data.model.CartItem
+import com.hoaki.food.ui.formatPrice
 import com.hoaki.food.ui.viewmodel.AddressViewModel
 import com.hoaki.food.ui.viewmodel.CartViewModel
 import com.hoaki.food.ui.viewmodel.CheckoutState
@@ -53,12 +57,6 @@ fun CheckoutScreen(
         "${it.fullAddress}, ${it.ward}, ${it.district}, ${it.city}"
     } ?: ""
     
-    val cartItems by cartViewModel.cartItems.collectAsState()
-    val subtotal by cartViewModel.subtotal.collectAsState()
-    val deliveryFee by cartViewModel.deliveryFee.collectAsState()
-    val total by cartViewModel.total.collectAsState()
-    val checkoutState by orderViewModel.checkoutState.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
     
     LaunchedEffect(checkoutState) {
         when (checkoutState) {
@@ -98,7 +96,8 @@ fun CheckoutScreen(
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
                             text = "Tổng cộng",
@@ -175,7 +174,8 @@ fun CheckoutScreen(
                     
                     if (selectedAddress != null) {
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.Top
                         ) {
                             Icon(
                                 Icons.Default.LocationOn,
@@ -228,10 +228,7 @@ fun CheckoutScreen(
                             Text("Thêm địa chỉ giao hàng")
                         }
                     }
-                        modifier = Modifier.fillMaxWidth(),
-                        minLines = 2,
-                        maxLines = 3
-                    )
+                    
                     
                     OutlinedTextField(
                         value = phoneNumber,
@@ -283,7 +280,8 @@ fun CheckoutScreen(
                     cartItems.forEach { item ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
                                 text = "${item.quantity}x ${item.foodName}",
@@ -325,7 +323,7 @@ fun CheckoutScreen(
                             text = formatPrice(deliveryFee),
                             style = MaterialTheme.typography.bodyMedium
                         )
-                    )
+                    }
                 }
             }
         }
