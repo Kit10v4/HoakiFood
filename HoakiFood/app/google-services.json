@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "364809078535-5d5m963v99kkn1u58llmnsmgf4re1kr7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hoaki.food",
+            "certificate_hash": "0995d966a43dc1ff783901ae1f4a0af5ff43a738"
+          }
+        },
+        {
           "client_id": "364809078535-c1ko5fp1nj44qnmtr32m3heeh6sjbm10.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
