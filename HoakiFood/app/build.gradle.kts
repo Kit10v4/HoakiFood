@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -10,6 +13,21 @@ plugins {
 android {
     namespace = "com.hoaki.food"
     compileSdk = 34
+
+    signingConfigs {
+        create("release") {
+            val props = Properties()
+            val keystoreFile = rootProject.file("keystore.properties")
+            if (keystoreFile.exists()) {
+                props.load(FileInputStream(keystoreFile))
+            }
+
+            storeFile = rootProject.file(props.getProperty("storeFile", "my-release-key.jks"))
+            storePassword = props.getProperty("storePassword", "")
+            keyAlias = props.getProperty("keyAlias", "")
+            keyPassword = props.getProperty("keyPassword", "")
+        }
+    }
 
     defaultConfig {
         applicationId = "com.hoaki.food"
@@ -28,6 +46,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     
@@ -54,6 +73,7 @@ android {
         }
     }
 }
+
 
 dependencies {
     // Core & Compose

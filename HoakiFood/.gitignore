@@ -25,3 +25,7 @@ captures/
 *.hprof
 .cxx/
 *.log
+
+# Sensitive files
+keystore.properties
+google-services.json
