@@ -29,6 +29,8 @@ fun ProfileScreen(
     onCartClick: () -> Unit,
     onFabClick: () -> Unit,
     onAddressClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    onAboutClick: () -> Unit,
     authViewModel: AuthViewModel = hiltViewModel(),
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
@@ -193,7 +195,7 @@ fun ProfileScreen(
                 ProfileMenuItem(
                     icon = Icons.Default.Settings,
                     title = "Cài đặt",
-                    onClick = { /* TODO */ }
+                    onClick = onSettingsClick
                 )
             }
 
@@ -202,7 +204,7 @@ fun ProfileScreen(
                 ProfileMenuItem(
                     icon = Icons.Default.Info,
                     title = "Về chúng tôi",
-                    onClick = { /* TODO */ }
+                    onClick = onAboutClick
                 )
             }
 

@@ -181,6 +181,12 @@ fun NavGraph(
                 },
                 onAddressClick = {
                     navController.navigate(Screen.AddressList.route)
+                },
+                onSettingsClick = {
+                    navController.navigate(Screen.Settings.route)
+                },
+                onAboutClick = {
+                    navController.navigate(Screen.About.route)
                 }
             )
         }
@@ -232,6 +238,18 @@ fun NavGraph(
                 addressId = addressId,
                 onBackClick = { navController.popBackStack() },
                 onSaveSuccess = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.Settings.route) {
+            SettingsScreen(
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.About.route) {
+            AboutScreen(
+                onBackClick = { navController.popBackStack() }
             )
         }
     }

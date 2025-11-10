@@ -22,4 +22,6 @@ sealed class Screen(val route: String) {
     object EditAddress : Screen("edit_address/{addressId}") {
         fun createRoute(addressId: Long) = "edit_address/$addressId"
     }
+    object Settings : Screen("settings")
+    object About : Screen("about")
 }
