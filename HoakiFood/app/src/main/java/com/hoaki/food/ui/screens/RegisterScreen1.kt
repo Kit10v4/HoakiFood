@@ -215,7 +215,7 @@ fun RegisterScreen1(
                         text = "Đã có tài khoản?",
                         fontSize = 15.sp
                     )
-                    Spacer(modifier = Modifier.width(2.dp))
+                    Spacer(modifier = Modifier.width(5.dp))
                     Text(
                         text = "Đăng nhập",
                         fontSize = 15.sp,
