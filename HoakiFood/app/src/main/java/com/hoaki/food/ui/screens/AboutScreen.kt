@@ -47,7 +47,7 @@ fun AboutScreen(
             Spacer(modifier = Modifier.height(16.dp))
             
             Image(
-                painter = painterResource(id = R.drawable.logo),
+                painter = painterResource(id = R.drawable.logo_text),
                 contentDescription = "HoakiFood Logo",
                 modifier = Modifier.size(120.dp)
             )
