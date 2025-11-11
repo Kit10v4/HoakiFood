@@ -296,7 +296,7 @@ fun LoginScreen(
                         text = "Chưa có tài khoản",
                         fontSize = 15.sp
                     )
-                    Spacer(modifier = Modifier.width(2.dp))
+                    Spacer(modifier = Modifier.width(5.dp))
                     Text(
                         text = "Đăng ký",
                         fontSize = 15.sp,
